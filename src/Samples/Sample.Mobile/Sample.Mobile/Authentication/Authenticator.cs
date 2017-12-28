@@ -55,7 +55,7 @@ namespace Sample.Mobile.Authentication
                     AccessToken = Client.AccessToken;
 
                     // dismiss login page
-                    await Application.Current.MainPage.Navigation.PopAsync();
+                        await Application.Current.MainPage.Navigation.PopAsync();
                     return true;
                 }
             }

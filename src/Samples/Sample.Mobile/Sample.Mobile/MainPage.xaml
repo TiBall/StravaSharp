@@ -2,9 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Sample.Mobile"
-             x:Class="Sample.Mobile.MainPage">
+             x:Class="Sample.Mobile.MainPage"
+			 >
+	<!--<ContentPage.Behaviors>
+		<local:EventToCommandBehavior EventName="Appearing" Command="{Binding GetUpdateCommand}" />
+	</ContentPage.Behaviors>-->
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="10*"/>
 		</Grid.RowDefinitions>
@@ -12,11 +17,11 @@
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
+
+		<Button Text="List my activities" IsEnabled="{Binding IsAuthenticated}" Command="{Binding GetActivitiesCommand}" Grid.Row="0"/>
+		<Label Text="{Binding ActivityCount}" Grid.Row="0" Grid.Column="1" BackgroundColor="Gray"/>
 		
-		<Button Text="List my activities" Command="{Binding GetActivitiesCommand}" Grid.Row="0"/>
-		<Label Text="{Binding ActivityCount}" Grid.Row="0" Grid.Column="1"/>
-		
-		<ListView ItemsSource="{Binding Activities}" Grid.Row="1" SelectedItem="{Binding SelectedActivity, Mode=TwoWay}">
+		<ListView ItemsSource="{Binding Activities}" Grid.Row="2" SelectedItem="{Binding SelectedActivity, Mode=TwoWay}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>
@@ -31,8 +36,8 @@
 			</ListView.ItemTemplate>
 		</ListView>
 
-		<Button IsVisible="False" Text="List my activities" Command="{Binding GetBuddysCommand}" Grid.Row="0" Grid.Column="1"/>
-		<ListView ItemsSource="{Binding Buddys}" Grid.Row="1" Grid.Column="1">
+		<Button Text="Authenticate" Command="{Binding GetAuthentificationCommand}" Grid.Row="1" Grid.Column="1"/>
+		<ListView ItemsSource="{Binding Buddys}" Grid.Row="2" Grid.Column="1">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>

@@ -18,17 +18,23 @@ namespace Sample.ViewModels
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public bool IsAuthenticated { get; private set; }
+        public bool IsAuthenticated { get; protected set; }
 
         public IList<ActivityViewModel> Activities { get; } = new ObservableCollection<ActivityViewModel>();
 
+        private Dictionary<int, Athlete> allMyBuddies = new Dictionary<int, Athlete>();
+        private Dictionary<int, float> buddydistance = new Dictionary<int, float>();
+
+        private int page = 1;
+        public bool IsSearchingBuddies { get; set; }
+
         public async Task GetActivitiesAsync()
         {
-            Dictionary<int, float> buddydistance = new Dictionary<int, float>();
-            int page = 1;
-            while (true)
+            
+            //Dictionary<int, float> buddyTime = new Dictionary<int, float>();
+            while (IsSearchingBuddies)
             {
-                var activities = await _client.Activities.GetAthleteActivities(page, 100);
+                var activities = await _client.Activities.GetAthleteActivities(page, 30);
                 if(activities.Count == 0)
                 {
                     return;
@@ -47,19 +53,22 @@ namespace Sample.ViewModels
                 foreach (var buddy in buddiesList.OrderByDescending(b => b.Distance))
                 {
                     nameCounter++;
-                    if (nameCounter <= 10)
+                     
+                    if (!allMyBuddies.ContainsKey(buddy.Id))
                     {
-                        var buddyName = await _client.Athletes.Get(buddy.Id);
-                        buddy.Name = string.Format("{0} {1}", buddyName.FirstName, buddyName.LastName);
+                        allMyBuddies.Add(buddy.Id, await _client.Athletes.Get(buddy.Id));
                     }
+
+                    Athlete buddyData = allMyBuddies[buddy.Id];
+                    buddy.Name = string.Format("{0} {1}", buddyData.FirstName, buddyData.LastName);
                     Buddys.Add(buddy);
                 }
                 page++;
-                ActivityCount = Activities.Count.ToString();
+                ActivityCount = string.Format("{0} Activities processed", Activities.Count.ToString());
                 base.RaisePropertyChanged(() => ActivityCount);
             }
-
         }
+
         public string ActivityCount { get; set; }
 
         private async Task AddActivities(List<ActivitySummary> activities, Dictionary<int, float> buddydistance)
@@ -89,13 +98,22 @@ namespace Sample.ViewModels
         {
             get
             {
-                return _getActivitiesCommand ?? (_getActivitiesCommand = new RelayCommand(async () => await GetActivitiesAsync()));
+                return _getActivitiesCommand ?? (_getActivitiesCommand = new RelayCommand(async () =>
+                {
+                    if (IsSearchingBuddies)
+                    {
+                        IsSearchingBuddies = false;
+                    }
+                    else
+                    {
+                        IsSearchingBuddies = true;
+                        await GetActivitiesAsync();
+                    }
+                }));
             }
         }
 
         private RelayCommand _getBuddysCommand;
-        private ActivityViewModel _selectedActivity;
-
         public RelayCommand GetBuddysCommand
         {
             get
@@ -104,6 +122,7 @@ namespace Sample.ViewModels
             }
         }
 
+        private ActivityViewModel _selectedActivity;
         public ActivityViewModel SelectedActivity
         {
             get { return _selectedActivity; }
