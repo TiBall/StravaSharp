@@ -1,4 +1,7 @@
-﻿using StravaSharp;
+﻿using System;
+using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Command;
+using StravaSharp;
 
 namespace Sample.ViewModels
 {
@@ -25,5 +28,7 @@ namespace Sample.ViewModels
                     return $"{_summary.Distance} m";
             }
         }
+        
+        public long GetId() { return _summary.Id; }
     }
 }

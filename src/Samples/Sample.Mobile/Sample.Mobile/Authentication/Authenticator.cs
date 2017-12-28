@@ -71,7 +71,7 @@ namespace Sample.Mobile.Authentication
             // Not authenticated yet
             try
             {
-                //await Application.Current.MainPage.Navigation.PushAsync(new LoginPage());
+                await Application.Current.MainPage.Navigation.PushAsync(new LoginPage(this));
             }
             catch (Exception ex)
             {

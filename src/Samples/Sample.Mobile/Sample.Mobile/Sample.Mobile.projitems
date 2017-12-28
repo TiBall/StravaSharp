@@ -14,6 +14,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\RequestFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\Authenticator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Startup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
       <SubType>Code</SubType>
