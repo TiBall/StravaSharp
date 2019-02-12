@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -251,5 +253,64 @@ namespace StravaSharp
 
         //photos: object
         //photos summary
+    }
+
+    public partial class ActivityZone
+    {
+        [JsonProperty("score")]
+        public long Score { get; set; }
+
+        [JsonProperty("sensor_based")]
+        public bool SensorBased { get; set; }
+
+        [JsonProperty("custom_zones")]
+        public bool CustomZones { get; set; }
+
+        [JsonProperty("max")]
+        public long Max { get; set; }
+
+        [JsonProperty("distribution_buckets", NullValueHandling = NullValueHandling.Ignore)]
+        public List<TimeZoneRange> DistributionBuckets { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("points")]
+        public long Points { get; set; }
+    }
+
+    public class TimeZoneRange
+    {
+        [JsonProperty("min")]
+        public int Min { get; set; }
+
+        [JsonProperty("max")]
+        public int Max { get; set; }
+
+        [JsonProperty("time")]
+        public int Time { get; set; }
+    }
+
+    public partial class ActivityZone
+    {
+        public static ActivityZone[] FromJson(string json) => JsonConvert.DeserializeObject<ActivityZone[]>(json, StravaSharp.Converter.Settings);
+    }
+
+    public static class Serialize
+    {
+        public static string ToJson(this ActivityZone[] self) => JsonConvert.SerializeObject(self, StravaSharp.Converter.Settings);
+    }
+
+    internal static class Converter
+    {
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        {
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.None,
+            Converters =
+            {
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            },
+        };
     }
 }

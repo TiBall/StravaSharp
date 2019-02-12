@@ -206,5 +206,52 @@ namespace StravaSharp
             var response = await _client.RestClient.Execute<List<Stream>>(request);
             return response.Data;
         }
+
+        /// <summary>
+        /// Returns the activities that were matched as “with this group”. The number equals activity.athlete_count-1. Pagination is supported.
+        /// </summary>
+        /// <param name="activityId"></param>
+        /// <param name="page"></param>
+        /// <param name="itemsPerPage"></param>
+        /// <returns></returns>
+        public async Task<List<ActivitySummary>> GetRelatedActivities(long activityId, int page = 0, int itemsPerPage = 0)
+        {
+            var request = new RestRequest("/api/v3/activities/{id}/related", Method.GET);
+            request.AddParameter("id", activityId, ParameterType.UrlSegment);
+            if (page != 0)
+                request.AddParameter("page", page);
+            if (itemsPerPage != 0)
+                request.AddParameter("per_page", itemsPerPage);
+            var response = await _client.RestClient.Execute<List<ActivitySummary>>(request);
+
+            return response.Data;
+        }
+
+        /// <summary>
+        /// Summit Feature. Returns the zones of a given activity. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
+        /// </summary>
+        /// <param name="activityId"></param>
+        /// <returns></returns>
+        public async Task<List<ActivityZone>> GetActivitieZones(long activityId)
+        {
+            var request = new RestRequest("/api/v3/activities/{id}/zones", Method.GET);
+            request.AddParameter("id", activityId, ParameterType.UrlSegment);
+
+            List<ActivityZone> result = null;
+            try
+            {
+                var response = await _client.RestClient.Execute<List<ActivityZone>>(request);
+                result = response.Data;
+            }
+            catch (Exception e)
+            {
+                ;
+            }
+            finally
+            {
+                result = new List<ActivityZone>();
+            }
+            return result;
+        }
     }
 }
