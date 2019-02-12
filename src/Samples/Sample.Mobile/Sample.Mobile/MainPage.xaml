@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Sample.Mobile"
              x:Class="Sample.Mobile.MainPage"
+             BindingContext="{Binding Path=MainViewModel, Source={StaticResource Locator}}"
 			 >
 	<!--<ContentPage.Behaviors>
 		<local:EventToCommandBehavior EventName="Appearing" Command="{Binding GetUpdateCommand}" />

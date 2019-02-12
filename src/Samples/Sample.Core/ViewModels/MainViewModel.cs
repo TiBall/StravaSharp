@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Sample.ViewModels
@@ -78,17 +79,55 @@ namespace Sample.ViewModels
                 Activities.Add(new ActivityViewModel(activity));
                 if (activity.AthleteCount <= 1) continue;
 
-                var related = await _client.Activities.GetRelatedActivities(activity.Id);
-                foreach (var other in related)
+                //var related = await _client.Activities.GetActivitieZones(activity.Id);
+                //foreach (var other in related)
+                //{
+                //    if (buddydistance.ContainsKey(other.Athlete.Id))
+                //    {
+                //        buddydistance[other.Athlete.Id] = buddydistance[other.Athlete.Id] + activity.Distance;
+                //    }
+                //    else
+                //    {
+                //        buddydistance.Add(other.Athlete.Id, activity.Distance);
+                //    }
+                //}
+
+                var zones = await _client.Activities.GetActivitieZones(activity.Id);
+                var zonestring = new StringBuilder();
+                for (var index = 0; index < zones.Count; index++)
                 {
-                    if (buddydistance.ContainsKey(other.Athlete.Id))
+                    var zone = zones[index];
+                    if (!zone.SensorBased)
                     {
-                        buddydistance[other.Athlete.Id] = buddydistance[other.Athlete.Id] + activity.Distance;
+                        continue;
                     }
-                    else
+
+                    if (zone.Type == "power")
                     {
-                        buddydistance.Add(other.Athlete.Id, activity.Distance);
+                        continue;
                     }
+
+                    if (zone.DistributionBuckets == null)
+                    {
+                        continue;
+                    }
+
+                    
+                    zonestring.AppendFormat("Zone {0}: {1}", index,
+                        string.Join(",",
+                            zone.DistributionBuckets.Select(b => b.Min + "-" + b.Max + ": " + b.Time + "min")));
+
+                    var zoneminutes = new List<int> {0, 0, 0, 0, 0}; //Zones 1-5                   
+                    for (var i = 0; i < zone.DistributionBuckets.Count; i++)
+                    {
+                        zoneminutes[i] = (int)TimeSpan.FromSeconds(zone.DistributionBuckets[i].Time).TotalMinutes;
+                    }
+                    
+                    string.Format("{0};{1};{2};https://www.strava.com/activities/{3};{4};;;;;{5};{6};{7};{8};{9}",
+                        activity.StartDate.Date.ToString("MM/dd/yyyy"), "",
+                        activity.StartDate.DayOfWeek.ToString().Substring(0, 3), activity.Id, activity.Name,
+                        string.Join(";",zoneminutes));
+
                 }
             }
         }

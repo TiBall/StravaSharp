@@ -17,7 +17,7 @@ namespace Sample.Mobile.ViewModels
 
         static Authenticator CreateAuthenticator()
         {
-            var client = Config.CreateOAuth2Cient();
+            var client = Config.CreateOAuth2Cient("http://strava.ballendat.com");
             return new Authenticator(client);
         }
 
