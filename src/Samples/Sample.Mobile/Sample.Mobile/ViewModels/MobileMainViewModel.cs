@@ -2,16 +2,13 @@
 using Sample.Mobile.Authentication;
 using Sample.ViewModels;
 using StravaSharp;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Sample.Mobile.ViewModels
 {
     public class MobileMainViewModel:MainViewModel
     {
-        private static Authenticator auth = CreateAuthenticator();
+        private static readonly Authenticator auth = CreateAuthenticator();
 
         public MobileMainViewModel():base(new Client(auth))
         {
@@ -20,17 +17,7 @@ namespace Sample.Mobile.ViewModels
 
         static Authenticator CreateAuthenticator()
         {
-            var redirectUrl = $"http://strava.ballendat.com/";
-            var config = new RestSharp.Portable.OAuth2.Configuration.RuntimeClientConfiguration
-            {
-                IsEnabled = false,
-                ClientId = Config.ClientId,
-                ClientSecret = Config.ClientSecret,
-                RedirectUri = redirectUrl,
-                Scope = "view_private",
-            };
-            var client = new StravaClient(new RequestFactory(), config);
-
+            var client = Config.CreateOAuth2Cient();
             return new Authenticator(client);
         }
 
@@ -61,6 +48,7 @@ namespace Sample.Mobile.ViewModels
         private void UpdateIsAuthenticated()
         {
             IsAuthenticated = auth.IsAuthenticated;
+            Status = IsAuthenticated? "Authention sucessfull":"Not Authenticated";
             this.RaisePropertyChanged(() => IsAuthenticated);
         }
     }

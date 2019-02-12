@@ -11,10 +11,15 @@ namespace Sample.Mobile
 	{
         public MainPage()
 		{
-			InitializeComponent();
-            
-            BindingContext = new MobileMainViewModel();
-            
-		} 
-    }
+			InitializeComponent();       
+			//BindingContext = new MobileMainViewModel();     
+		}
+
+	    protected override void OnAppearing()
+	    {
+	        base.OnAppearing();
+	        
+            ViewModelLocator.Instance.MainViewModel.GetUpdateCommand.Execute(null);
+        }
+	}
 }

@@ -11,6 +11,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
 			<RowDefinition Height="10*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
@@ -20,6 +21,7 @@
 
 		<Button Text="List my activities" IsEnabled="{Binding IsAuthenticated}" Command="{Binding GetActivitiesCommand}" Grid.Row="0"/>
 		<Label Text="{Binding ActivityCount}" Grid.Row="0" Grid.Column="1" BackgroundColor="Gray"/>
+		<Label Text="{Binding Status}" Grid.Row="1" Grid.Column="1" TextColor="DarkGray" BackgroundColor="LightGray" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
 		
 		<ListView ItemsSource="{Binding Activities}" Grid.Row="2" SelectedItem="{Binding SelectedActivity, Mode=TwoWay}">
 			<ListView.ItemTemplate>

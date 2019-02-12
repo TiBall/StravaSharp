@@ -30,7 +30,7 @@ namespace Sample.ViewModels
 
         public async Task GetActivitiesAsync()
         {
-            
+            Status = "requesting Activities...";
             //Dictionary<int, float> buddyTime = new Dictionary<int, float>();
             while (IsSearchingBuddies)
             {
@@ -142,6 +142,21 @@ namespace Sample.ViewModels
             foreach (var other in related)
             {
                 Buddys.Add(new BuddyViewModel() { Id = other.Athlete.Id});
+            }
+        }
+		
+		private string _status = string.Empty;
+
+        /// <summary>
+        /// Sets and gets the Status property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                Set(()=>Status, ref _status, value);
             }
         }
     }

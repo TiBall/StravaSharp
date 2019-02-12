@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace StravaSharp.Tests
 {
     [TestFixture("2011-08-10-17-51-31.fit")]
+    [TestFixture("gabornemeth.2018-04-21-20-04-57-385Z.GarminPush.19873008881.fit")]
     public class UploadTest
     {
         private string _fileName;
@@ -19,7 +20,7 @@ namespace StravaSharp.Tests
 #if !DEBUG
         [Ignore("Delete requires application level permission.")]
 #endif
-        public async Task UploadAndDelete()
+        public async Task Upload()
         {
             var client = TestHelper.CreateStravaClient();
             using (var stream = Resource.GetStream(_fileName))
@@ -35,9 +36,6 @@ namespace StravaSharp.Tests
                     result = await client.Activities.GetUploadStatus(result.Id);
                     await Task.Delay(2000);
                 }
-                await Task.Delay(3000);
-                // delete the ready activity
-                await client.Activities.Delete(result.ActivityId);
             }
         }
     }
