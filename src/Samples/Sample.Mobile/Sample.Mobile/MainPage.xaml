@@ -12,8 +12,8 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
-			<RowDefinition Height="*"/>
 			<RowDefinition Height="10*"/>
+			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
@@ -24,14 +24,15 @@
 		<Label Text="{Binding ActivityCount}" Grid.Row="0" Grid.Column="1" BackgroundColor="Gray"/>
 		<Label Text="{Binding Status}" Grid.Row="1" Grid.Column="1" TextColor="DarkGray" BackgroundColor="LightGray" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
 		
-		<ListView ItemsSource="{Binding Activities}" Grid.Row="2" SelectedItem="{Binding SelectedActivity, Mode=TwoWay}">
+		<ListView ItemsSource="{Binding Activities}" Grid.Row="2" Grid.ColumnSpan="2" SelectedItem="{Binding SelectedActivity, Mode=TwoWay}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>
 						<Grid>
 							<Label Text="{Binding Name}" FontAttributes="Bold" />
 							<Label Grid.Column="1" Text="{Binding Start}" />
-							<Label Grid.Column="2" Text="{Binding Distance}" HorizontalTextAlignment="End" />
+							<Label Grid.Column="2" Text="{Binding Distance}" />
+							<Label Grid.Column="3" Text="{Binding ZonesString}" HorizontalTextAlignment="End" />
 						</Grid>
 					</ViewCell>
 
@@ -40,20 +41,22 @@
 		</ListView>
 
 		<Button Text="Authenticate" Command="{Binding GetAuthentificationCommand}" Grid.Row="1" Grid.Column="1"/>
-		<ListView ItemsSource="{Binding Buddys}" Grid.Row="2" Grid.Column="1">
+		<Editor Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Text="{Binding CsvOutput, Mode=OneWay}"></Editor>
+		<!--
+		<ListView ItemsSource="{Binding Zones}" Grid.Row="2" Grid.Column="1">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>
 						<Grid>
 							<Label Text="{Binding Name}" FontAttributes="Bold" />
 							<Label Grid.Column="1" Text="{Binding Id}" />
-							<Label Grid.Column="2" Text="{Binding Distance}" HorizontalTextAlignment="End" />
+							<Label Grid.Column="2" Text="{Binding ZoneString}" HorizontalTextAlignment="End" />
 						</Grid>
 					</ViewCell>
 
 				</DataTemplate>
 			</ListView.ItemTemplate>
-		</ListView>
+		</ListView>-->
 	</Grid>
 
 </ContentPage>

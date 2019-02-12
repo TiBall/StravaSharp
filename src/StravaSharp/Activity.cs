@@ -282,10 +282,10 @@ namespace StravaSharp
     public class TimeZoneRange
     {
         [JsonProperty("min")]
-        public int Min { get; set; }
+        public string Min { get; set; }
 
         [JsonProperty("max")]
-        public int Max { get; set; }
+        public string Max { get; set; }
 
         [JsonProperty("time")]
         public int Time { get; set; }

@@ -8,6 +8,21 @@ namespace Sample.ViewModels
     public class ActivityViewModel
     {
         private ActivitySummary _summary;
+        private ZoneData _zones;
+
+        public ZoneData Zones
+        {
+            get => _zones;
+            set
+            {
+                _zones = value;
+            }
+        }
+
+        public ActivitySummary Summary
+        {
+            get => _summary;
+        }
 
         public ActivityViewModel(ActivitySummary summary)
         {
@@ -28,7 +43,12 @@ namespace Sample.ViewModels
                     return $"{_summary.Distance} m";
             }
         }
-        
+
+        public string ZonesString
+        {
+            get => _zones==null?string.Empty: $"Req: {_zones.Reg}min, G1:{_zones.G1}min, G2:{_zones.G2}min, Eb:{_zones.Eb}min, Int:{_zones.Int}min";
+        }
+
         public long GetId() { return _summary.Id; }
     }
 }

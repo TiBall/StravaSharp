@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -207,25 +208,25 @@ namespace StravaSharp
             return response.Data;
         }
 
-        /// <summary>
-        /// Returns the activities that were matched as “with this group”. The number equals activity.athlete_count-1. Pagination is supported.
-        /// </summary>
-        /// <param name="activityId"></param>
-        /// <param name="page"></param>
-        /// <param name="itemsPerPage"></param>
-        /// <returns></returns>
-        public async Task<List<ActivitySummary>> GetRelatedActivities(long activityId, int page = 0, int itemsPerPage = 0)
-        {
-            var request = new RestRequest("/api/v3/activities/{id}/related", Method.GET);
-            request.AddParameter("id", activityId, ParameterType.UrlSegment);
-            if (page != 0)
-                request.AddParameter("page", page);
-            if (itemsPerPage != 0)
-                request.AddParameter("per_page", itemsPerPage);
-            var response = await _client.RestClient.Execute<List<ActivitySummary>>(request);
+        ///// <summary>
+        ///// Returns the activities that were matched as “with this group”. The number equals activity.athlete_count-1. Pagination is supported.
+        ///// </summary>
+        ///// <param name="activityId"></param>
+        ///// <param name="page"></param>
+        ///// <param name="itemsPerPage"></param>
+        ///// <returns></returns>
+        //public async Task<List<ActivitySummary>> GetRelatedActivities(long activityId, int page = 0, int itemsPerPage = 0)
+        //{
+        //    var request = new RestRequest("/api/v3/activities/{id}/related", Method.GET);
+        //    request.AddParameter("id", activityId, ParameterType.UrlSegment);
+        //    if (page != 0)
+        //        request.AddParameter("page", page);
+        //    if (itemsPerPage != 0)
+        //        request.AddParameter("per_page", itemsPerPage);
+        //    var response = await _client.RestClient.Execute<List<ActivitySummary>>(request);
 
-            return response.Data;
-        }
+        //    return response.Data;
+        //}
 
         /// <summary>
         /// Summit Feature. Returns the zones of a given activity. Requires activity:read for Everyone and Followers activities. Requires activity:read_all for Only Me activities.
@@ -237,6 +238,7 @@ namespace StravaSharp
             var request = new RestRequest("/api/v3/activities/{id}/zones", Method.GET);
             request.AddParameter("id", activityId, ParameterType.UrlSegment);
 
+            bool debugError = false;
             List<ActivityZone> result = null;
             try
             {
@@ -245,11 +247,23 @@ namespace StravaSharp
             }
             catch (Exception e)
             {
-                ;
-            }
-            finally
-            {
+                debugError = true;
                 result = new List<ActivityZone>();
+            }
+
+            if (debugError)
+            {
+                try
+                {
+                    var responseNoSerialisation = await _client.RestClient.Execute(request);
+                    ActivityZone[] obj = ActivityZone.FromJson(responseNoSerialisation.Content);
+                    result = obj.ToList();
+                }
+                catch (Exception e)
+                {
+                    ;
+                }
+                
             }
             return result;
         }
