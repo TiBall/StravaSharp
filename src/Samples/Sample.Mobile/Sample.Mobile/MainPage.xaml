@@ -13,14 +13,15 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="10*"/>
-			<RowDefinition Height="*"/>
+			<RowDefinition Height="2*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 
-		<Button Text="List my activities" IsEnabled="{Binding IsAuthenticated}" Command="{Binding GetActivitiesCommand}" Grid.Row="0"/>
+		<Button Text="Authenticate" Grid.Row="0" Grid.Column="0" Command="{Binding GetAuthentificationCommand}" />
+		<Button Text="List my activities" Grid.Row="1" Grid.Column="0" IsEnabled="{Binding IsAuthenticated}" Command="{Binding GetActivitiesCommand}"/>
 		<Label Text="{Binding ActivityCount}" Grid.Row="0" Grid.Column="1" BackgroundColor="Gray"/>
 		<Label Text="{Binding Status}" Grid.Row="1" Grid.Column="1" TextColor="DarkGray" BackgroundColor="LightGray" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
 		
@@ -40,8 +41,8 @@
 			</ListView.ItemTemplate>
 		</ListView>
 
-		<Button Text="Authenticate" Command="{Binding GetAuthentificationCommand}" Grid.Row="1" Grid.Column="1"/>
-		<Editor Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Text="{Binding CsvOutput, Mode=OneWay}"></Editor>
+		<Button Text="Create Csv" Grid.Row="3" Grid.Column="0" IsEnabled="{Binding IsAuthenticated}" Command="{Binding CreateCsvCommand}"/>
+		<Editor Grid.Row="3" Grid.Column="01" Text="{Binding CsvOutput, Mode=OneWay}"></Editor>
 		<!--
 		<ListView ItemsSource="{Binding Zones}" Grid.Row="2" Grid.Column="1">
 			<ListView.ItemTemplate>

@@ -40,7 +40,7 @@ namespace Sample.ViewModels
         public async Task GetActivitiesAsync()
         {
             Status = "requesting Activities...";
-            CsvOutput = "waitinf for Data...";
+            CsvOutput = "waiting for Data...";
             //Dictionary<int, float> buddyTime = new Dictionary<int, float>();
             while (IsSearchingBuddies)
             {
@@ -58,10 +58,9 @@ namespace Sample.ViewModels
                     return;
                 }
                 await AddZoneData(activities);
-
-                UpdateCsv();
+                
                 page++;
-                ActivityCount = string.Format("{0} Activities processed", Activities.Count.ToString());
+                ActivityCount = string.Format("{0} Activities processed. Continuing with page{1}", Activities.Count.ToString(), page);
                 base.RaisePropertyChanged(() => ActivityCount);
             }
         }
@@ -88,28 +87,69 @@ namespace Sample.ViewModels
                 }
             }
 
-            foreach (var csvRowPair in zonesByDate)
+            //Header Row
+            var csvDataFormatString = "{0};{1};{2};{3};{4};{5};{6}";
+
+            var header = string.Format(csvDataFormatString,
+                "Date",
+                "Plan Nr.",
+                "Wochentag",
+                "Url", 
+                "Anmerkung", 
+                "Reg;G1;G2;EB;INT",
+                "Reg;G1;G2;EB;INT"                    
+            );
+            csv.AppendLine(header);
+
+            var toneKeysOrdered = zonesByDate.Keys.OrderBy(DateTime.Parse).ToList();
+            
+            var firstDate = DateTime.Parse(toneKeysOrdered.FirstOrDefault());
+            var lastDate = DateTime.Parse(toneKeysOrdered.LastOrDefault()); 
+            var dateCounter = firstDate;
+            while (dateCounter <= lastDate)
             {
-                var runZonesCsv = ZonesToCsv(csvRowPair.Value.RunZones);
-                var bikeZonesCsv = ZonesToCsv(csvRowPair.Value.BikeZones);
-                var zoneString = string.Format("{0};{1};{2};{3};{4}{5}{6}",
-                    csvRowPair.Key, 
+                dateCounter = dateCounter.AddDays(1);
+
+                var dateKey = dateCounter.ToString("d");
+
+                CsvData csvData = new CsvData();
+                if (zonesByDate.ContainsKey(dateKey))
+                {
+                    csvData = zonesByDate[dateKey];                    
+                }
+                else
+                {
+                    //Leere Zeile
+                    csvData.Date = dateCounter;
+                }
+                var runZonesCsv = ZonesToCsv(csvData.RunZones);
+                var bikeZonesCsv = ZonesToCsv(csvData.BikeZones);
+                var zoneString = string.Format(csvDataFormatString,
+                    dateKey,
                     "",
-                    csvRowPair.Value.Date.DayOfWeek.ToString().Substring(0, 3),
-                    csvRowPair.Value.Url,
-                    csvRowPair.Value.Description,
+                    csvData.Date.DayOfWeek.ToString().Substring(0, 3),
+                    csvData.Url,
+                    csvData.Description,
                     runZonesCsv,
                     bikeZonesCsv
                 );
                 csv.AppendLine(zoneString);
+
+                //2 Leerzeilen nach Sonntag
+                if (csvData.Date.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    var emptyLine = string.Join(";", Enumerable.Range(0, 15).Select(s => string.Empty));
+                    csv.AppendLine(emptyLine);
+                    csv.AppendLine(emptyLine);
+                }
             }
             
-            CsvOutput = csv.ToString();
+            CsvOutput = csv.ToString();            
         }
 
         private static string ZonesToCsv(ZoneData zonedata)
         {
-            var zoneminutescsv = $"{zonedata.Reg};{zonedata.G1};{zonedata.G2};{zonedata.Eb};{zonedata.Int};";
+            var zoneminutescsv = $"{zonedata.Reg};{zonedata.G1};{zonedata.G2};{zonedata.Eb};{zonedata.Int}";
             return zoneminutescsv;
         }
 
@@ -124,7 +164,7 @@ namespace Sample.ViewModels
             }
             else
             {
-                csvData.Url = " "+activityUrl;
+                csvData.Url += " "+activityUrl;
             }
 
             if (string.IsNullOrEmpty(csvData.Description))
@@ -133,7 +173,7 @@ namespace Sample.ViewModels
             }
             else
             {
-                csvData.Description = ", " + activity.Name;
+                csvData.Description += ", " + activity.Name;
             }
 
             if (activity.Summary.Type == ActivityType.Ride || activity.Summary.Type == ActivityType.VirtualRide)
@@ -253,12 +293,15 @@ namespace Sample.ViewModels
             }
         }
 
-        private RelayCommand _getBuddysCommand;
-        public RelayCommand GetBuddysCommand
+        private RelayCommand _createCsvCommand;
+        public RelayCommand CreateCsvCommand
         {
             get
             {
-                return _getBuddysCommand ?? (_getBuddysCommand = new RelayCommand(async () => await GetBuddysAsync()));
+                return _createCsvCommand ?? (_createCsvCommand = new RelayCommand(async () =>
+                {
+                   UpdateCsv();
+                }));
             }
         }
 
@@ -269,22 +312,11 @@ namespace Sample.ViewModels
             set
             {
                 _selectedActivity = value;
-                GetBuddysAsync();
             }
         }
 
         public IList<ZonesViewModel> Zones { get; } = new ObservableCollection<ZonesViewModel>();
 
-        private async Task GetBuddysAsync()
-        {
-            //Zones.Clear();
-            //var related = await _client.Activities.GetRelatedActivities(SelectedActivity.GetId());
-            //foreach (var other in related)
-            //{
-            //    Zones.Add(new ZonesViewModel() { Id = other.Athlete.Id});
-            //}
-        }
-		
 		private string _status = string.Empty;
         private string _csvOutput;
 

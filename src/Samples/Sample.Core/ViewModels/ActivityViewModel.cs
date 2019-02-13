@@ -8,7 +8,7 @@ namespace Sample.ViewModels
     public class ActivityViewModel
     {
         private ActivitySummary _summary;
-        private ZoneData _zones;
+        private ZoneData _zones= new ZoneData();
 
         public ZoneData Zones
         {
